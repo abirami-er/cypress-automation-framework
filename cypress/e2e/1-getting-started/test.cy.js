@@ -1,50 +1,41 @@
-import loginpage from "../../pages/loginpage";
+import loginPage from '../../pages/loginpage';
+import inventoryPage from '../../pages/InventoryPage';
+import cartPage from '../../pages/CartPage';
+import checkoutPage from '../../pages/CheckoutPage';
 
-describe('login', () => {
+describe('Checkout Page Tests', () => {
+     let user;
 
-  it('should login successfully', () => {
+    beforeEach(() => {
+        cy.login();
+        cy.fixture('userData').then((data) => {
+            user = data;
 
-    loginpage.visit();
-    loginpage.enterusername('standard_user');
-    loginpage.enterpassword('secret_sauce');
-    loginpage.clicklogin();
+        // Login before every test
+        
 
-  });
+        // Navigate to Cart and Checkout
+        inventoryPage.addProduct();
+        inventoryPage.openCart();
+        cartPage.clickCheckout();
 
+        cy.url().should('include', 'checkout-step-one.html');
+         });
+    });
+
+    it('should complete the checkout process', () => {
+        checkoutPage.enterFirstName('Abirami');
+        checkoutPage.enterlastname('R');
+        checkoutPage.enterPostalCode('621003');
+        checkoutPage. continue();
+
+        // Verify on checkout overview page
+        cy.url().should('include', 'checkout-step-two.html');
+
+        checkoutPage.finish();
+
+        // Verify order completion page
+        cy.url().should('include', 'checkout-complete.html');
+        cy.get('.complete-header').should('have.text', 'Thank you for your order!');
+    });
 });
-import InventoryPage from "../../pages/InventoryPage";
-
-describe('InventoryPage test',()=>{
-  it('should InventoryPage succesfully',()=>{
-    InventoryPage.addProduct();
-    InventoryPage.removeProduct();
-    InventoryPage.sortProducts();
-    InventoryPage.openCart();
-
-
-
-  });
-});
-import CartPage from "../../pages/CartPage";
-
-describe('CartPage test',()=>{
-  it('should CartPage succesfully',()=>{
-    CartPage.clickCheckout();
-    CartPage.removeItem();
-
-  });
-});
-import CheckoutPage from "../../pages/CheckoutPage";
-
-describe('CheckoutPage test',()=>{
-  it('should CheckoutPage succesfully',()=>{
-    CheckoutPage.enterFirstName('abirami');
-    CheckoutPage.enterlastname('r');
-    CheckoutPage.enterPostalCode('621003');
-    CheckoutPage.continue();
-    CheckoutPage.finish();
-    CheckoutPage.backToProducts();
-
-  });
-});
-
